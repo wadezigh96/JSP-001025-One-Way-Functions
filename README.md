@@ -7,17 +7,14 @@
 ## Materials
 
 - [Full exposition source (Markdown)](JSP-001025_Exposition_OneWayFunctions.md)
+- [Final exposition (PDF)](JSP-001025_Exposition_OneWayFunctions_FINAL-1.pdf)
+- [Final exposition (DOCX)](JSP-001025_Exposition_OneWayFunctions_FINAL-1.docx)
 - [Quality-control report](JSP-001025_Final_Independent_Quality_Control_Report.md)
 
-The exposition Markdown contains the full text supplied by the author in the conversation.
+## Review status
 
-## PDF and DOCX
+The PDF and DOCX files are present in this repository. The Markdown source has been updated to define the general threshold-indexed randomized complexity (rK^t_δ), including the (δ=1/3) notation used in the boundary-MINrK promise.
 
-The author named the files:
+The current PDF and DOCX binaries have not yet been independently rendered and compared page-by-page with the corrected Markdown. See the quality-control report for the remaining checks.
 
-- `JSP-001025_Exposition_OneWayFunctions_FINAL.pdf`
-- `JSP-001025_Exposition_OneWayFunctions_FINAL.docx`
-
-However, no actual binary attachments or clickable download URLs were present in the message, so those binaries are not included in this repository. The Markdown source is not represented as a substitute binary export.
-
-This is the author's public materials repository, not the official Justin Sun Prize awards repository. A GitHub commit does not itself constitute a MathDB submission or prize acceptance.
+This is the author's public materials repository, not the official Justin Sun Prize awards repository. A GitHub commit does not itself constitute a MathDB submission or prize acceptance. No MathDB submission is made by this repository update.
