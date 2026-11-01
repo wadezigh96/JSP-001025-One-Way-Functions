@@ -70,13 +70,62 @@ YES instances lie in the near-random boundary region; NO instances remain fully 
 
 ## 5. The Main Characterizations
 
-**Theorem 1.2 / Theorem 4.1 (Liu–Pass).** One-way functions exist if and only if boundary-MINrK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\). This equivalence is unconditional.
+**Theorem 1.2 / Theorem 4.1 (Liu–Pass).** One-way functions exist if and only if boundary-MINrK\({}^{\mathrm{poly}}\notin\mathrm{ioBPP}\). This equivalence is unconditional.
 
-**Theorem 1.1 / Theorem 4.2.** Assume there exists a constant \(\varepsilon > 0\) such that \(\mathrm{E} \not\subseteq \mathrm{ioSIZE}[2^{\varepsilon n}]\). Then one-way functions exist if and only if boundary-MINK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\).
+**Theorem 1.1 / Theorem 4.2.** Assume there exists a constant \(\varepsilon>0\) such that \(\mathrm{E}\not\subseteq\mathrm{ioSIZE}[2^{\varepsilon n}]\). Then one-way functions exist if and only if boundary-MINK\({}^{\mathrm{poly}}\notin\mathrm{ioBPP}\).
 
-**Theorem 4.3 (Liu–Pass).** If boundary-MINrK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\), then weak one-way functions exist. Yao’s hardness amplification (Theorem 2.3) converts any weak one-way function into a strong one-way function, establishing the “if” direction of Theorem 4.1. The converse direction (existence of one-way functions implies boundary-MINrK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\)) is proved as Theorem 4.7. Together, Theorems 4.3, 2.3, and 4.7 establish the equivalence stated in Theorem 4.1.
+The two directions of the unconditional randomized characterization are established separately. Theorem 4.3 derives a weak OWF from boundary-MINrK hardness; Theorem 2.3 (Yao's hardness amplification) upgrades a weak OWF to a strong OWF. Theorem 4.7 proves the converse direction, from OWF existence to boundary-MINrK hardness.
 
-These results do not prove that one-way functions exist. They give precise characterizations of what hardness would suffice.
+### 5.1 Theorem 4.3: From boundary-MINrK hardness to a weak OWF
+
+Assume that boundary-MINrK\({}^{\mathrm{poly}}\notin\mathrm{ioBPP}\). Fix a polynomial time bound \(t_1\). Liu–Pass construct a function on a restricted family of input lengths. Its input has the form
+
+\[
+\ell\Vert\Pi'\Vert r_1\Vert\cdots\Vert r_{n^3},
+\]
+
+where \(|\ell|=\lceil\log n\rceil\), \(|\Pi'|=n\), and each random tape \(r_i\) has length \(t_1(n)\). The string \(\ell\) encodes an integer in \([n]\), and \(\Pi\) is the \(\ell\)-bit prefix of \(\Pi'\). For each \(i\), the construction computes
+
+\[
+x_i=U(\Pi_{r_i},1^{t_1(n)}).
+\]
+
+If some string \(x\) occurs as a strict majority of the \(x_i\)'s, the function outputs
+
+\[
+f(\ell\Vert\Pi'\Vert r_1\Vert\cdots\Vert r_{n^3})
+=\ell\Vert x\Vert r_1\Vert\cdots\Vert r_{n^3}.
+\]
+
+If no majority string exists, it outputs \(\perp\). The paper then applies a padding/truncation construction to extend this restricted-length function to all input lengths while preserving weak one-wayness.
+
+The proof proceeds by contradiction. Set \(q(n)=24(2n)^6\), and suppose an inverter \(\mathcal A\) inverts \(f\) with probability at least \(1-1/q(n)\) for infinitely many security parameters \(n\). From \(\mathcal A\), the authors construct a probabilistic polynomial-time algorithm \(M\) for a boundary-MINrK promise problem. On input \(x\in\{0,1\}^n\), \(M\) samples \(n^3\) random tapes, runs \(\mathcal A\) on the candidate prefixes \(i\Vert x\Vert r_1\Vert\cdots\Vert r_{n^3}\) for \(i\in[n]\), checks whether each proposed preimage is valid, and outputs YES exactly when the smallest successful index is less than \(n-3\).
+
+To analyze \(M\), the proof introduces a BPP promise problem called \(\mathrm{Fail}\). An instance \(y=\ell\Vert\Pi'\) is classified according to the probability \(p_y\) that \(\mathcal A\) fails to invert the corresponding image: YES when \(p_y\ge 1/6\), and NO when \(p_y<1/12\). Since \(f\) and \(\mathcal A\) are efficient, this promise problem is in BPP. The Goldberg–Sipser language-compression theorem (Theorem 2.5), with \(k=6\), supplies a randomized decompressor whose descriptions have length at most \(n'-3\log n'\), where \(n'=n+\lceil\log n\rceil\).
+
+The correctness analysis has two parts:
+
+- **Claim 4.4 (NO instances).** If \(rK_{1/3}^{t_2}(x)\ge n-3\), then \(M(x)\) outputs NO with probability at least \(2/3\). The proof bounds the probability that any short candidate program succeeds on a majority of the sampled tapes. A Chernoff bound gives a very small failure probability for each program, and a union bound over all programs of length at most \(n-4\) keeps the total probability at most \(1/3\).
+- **Claim 4.5 (YES instances).** If \(x\) is a YES instance, its \(rK_{2/3}^{t_1}\)-witness succeeds on at least a \(2/3\) fraction of random tapes. Another Chernoff bound shows that the sampled tape collection yields a valid preimage with probability at least \(5/6\). If the inverter nevertheless failed with probability greater than \(1/3\), the associated \(\mathrm{Fail}\) instance would be sparse and could be compressed. Decompressing a short description and then running the randomized witness gives a program of length less than \(n-\log n\) that outputs \(x\) with probability greater than \(1/3\). This contradicts the YES promise \(rK_{1/3}^{t_2}(x)>n-\log n\).
+
+Thus \(M\) would decide the boundary-MINrK promise problem on infinitely many input lengths, contradicting the assumed worst-case hardness. Therefore \(f\) is a weak OWF. By Yao's Theorem 2.3, a weak OWF implies the existence of a (strong) OWF.
+
+### 5.2 Theorem 4.7: From OWFs to boundary-MINrK hardness
+
+Assume that OWFs exist. Liu–Pass adapt the two-step strategy of the earlier characterization for \(pK^t\):
+
+1. **OWF to Cond-EP PRG.** The existence of OWFs implies a conditionally-secure entropy-preserving pseudorandom generator (Cond-EP PRG), using the construction cited in the paper.
+2. **Cond-EP PRG to boundary hardness.** The output of the Cond-EP PRG has small \(rK^{\mathrm{poly}}\)-complexity because it can be generated by a short program without using the random tape. In addition, for every string \(x\) and time bound \(t\), the paper uses the inequality
+   \[
+   pK^t(x)\le rK^t(x).
+   \]
+   This lets the earlier boundary-hardness argument for \(pK^{\mathrm{poly}}\) be transferred to \(rK^{\mathrm{poly}}\).
+
+Consequently, boundary-MINrK\({}^{\mathrm{poly}}\notin\mathrm{ioBPP}\). The paper describes this proof as closely following the earlier \(pK\)-based proof; this exposition records its two key ingredients rather than reproducing every technical parameter and intermediate lemma.
+
+### 5.3 What the characterizations do—and do not—show
+
+Theorems 4.3, 2.3, and 4.7 establish the unconditional equivalence in Theorem 4.1. The conditional ordinary-K characterization in Theorem 4.2 instead uses Theorem 4.6, followed by Yao's amplification; its derandomization assumption is \(\mathrm{E}\not\subseteq\mathrm{ioSIZE}[2^{\varepsilon n}]\) for some constant \(\varepsilon>0\). These are characterizations: they show what worst-case hardness assumptions are equivalent to OWF existence, not that OWFs have been proved to exist.
 
 ## 6. Separate Worst-Case-to-Average-Case Results
 
