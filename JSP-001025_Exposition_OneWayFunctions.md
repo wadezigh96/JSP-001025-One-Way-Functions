@@ -2,127 +2,106 @@
 
 ## An Exposition of Liu–Pass, ITCS 2026
 
-**Author:** Kames xyz  
-**Date:** 1 November 2026  
-**Problem:** JSP-001025 — Existence of One-Way Functions (MathDB #405776)
-
-> **Document status:** Reconstructed Markdown source prepared from the exposition text supplied in the conversation. This is not a byte-for-byte copy of the user's final PDF/DOCX binaries.
+**Kames xyz · 1 November 2026**
 
 ## Abstract
 
-This exposition explains the characterization of one-way functions (OWFs) in terms of worst-case hardness of boundary versions of time-bounded Kolmogorov complexity established by Yanyi Liu and Rafael Pass. It introduces deterministic and randomized time-bounded Kolmogorov complexity, explains the boundary-MINK and boundary-MINrK promise problems, and distinguishes the unconditional randomized-complexity characterization from the conditional deterministic-complexity characterization.
+This exposition presents the central results of Liu and Pass (ITCS 2026), which characterize the existence of one-way functions in terms of the worst-case hardness of boundary versions of time-bounded Kolmogorov complexity. We introduce the formal definition of one-way functions, time-bounded Kolmogorov complexity \(K^t\), and randomized time-bounded Kolmogorov complexity \(rK^t\), carefully distinguishing \(rK\) from probabilistic Kolmogorov complexity \(pK\). We then explain the promise problems boundary-MINK and boundary-MINrK, including the precise thresholds in the special case \(\delta = 2/3\). The main results are an unconditional equivalence between the existence of one-way functions and the hardness of boundary-MINrK\(^{\mathrm{poly}}\) outside ioBPP (Theorems 1.2 and 4.1), and a conditional equivalence for boundary-MINK under the derandomization assumption that \(\mathrm{E}\) is not a subset of \(\mathrm{ioSIZE}[2^{\varepsilon n}]\) for some constant \(\varepsilon > 0\) (Theorems 1.1 and 4.2). We also discuss the related worst-case-to-average-case results (Theorems 1.3 and 1.4), the role of weak one-way functions and hardness amplification, and the open question of whether ordinary MINK hardness without the boundary promise suffices to imply one-way functions. All mathematical statements are based on Liu and Pass, ITCS 2026, DOI: 10.4230/LIPIcs.ITCS.2026.97.
 
-For the parameter choice discussed by Liu and Pass, the existence of OWFs is equivalent to the statement that the corresponding boundary-MINrK^poly problem is not in ioBPP. The analogous boundary-MINK^poly characterization is obtained under a derandomization assumption excluding `E ⊆ ioSIZE[2^(εn)]` for some ε > 0. The exposition also summarizes related worst-case-to-average-case results, weak OWFs and amplification, and an open question concerning ordinary MINK hardness without the boundary promise.
+## 1. Introduction: Why One-Way Functions Matter
 
-The results are characterizations: they identify complexity-theoretic conditions equivalent to OWF existence; they do not prove unconditionally that OWFs exist.
+One-way functions are the foundational primitive of private-key cryptography. Informally, a one-way function is easy to compute in the forward direction but hard to invert on average. Their existence is equivalent to the existence of pseudorandom generators, pseudorandom functions, and digital signatures. One-way functions are also necessary for private-key encryption and many other central cryptographic tasks (Impagliazzo’s “Minicrypt”). They do not, by themselves, yield public-key encryption.
 
-## 1. Introduction
+A central open question in cryptography and complexity theory is whether there exists a natural worst-case hardness assumption that is equivalent to the existence of one-way functions. Liu and Pass have pursued this question through the lens of time-bounded Kolmogorov complexity. Their ITCS 2026 paper provides precise characterizations of one-way function existence in terms of boundary hardness of time-bounded Kolmogorov complexity.
 
-One-way functions are a foundational primitive in modern cryptography. Informally, an OWF is efficiently computable but computationally infeasible to invert on a randomly selected input, even when an inverter may output any valid preimage.
+## 2. The Mathematical Definition of One-Way Functions
 
-OWFs are closely connected to pseudorandom generators, pseudorandom functions, and digital signatures, and they are necessary for private-key encryption. Their existence is not known to follow from standard worst-case assumptions such as P ≠ NP. This motivates the search for precise complexity-theoretic conditions equivalent to OWF existence.
+A function \(f : \{0,1\}^* \to \{0,1\}^*\) is a one-way function if:
 
-Liu and Pass study this question through time-bounded Kolmogorov complexity. Their ITCS 2026 work identifies boundary versions of minimum Kolmogorov complexity whose worst-case hardness characterizes OWFs.
+A deterministic algorithm computes \(f(x)\) in time polynomial in \(|x|\), for every input \(x\).
 
-## 2. One-Way Functions
+For every PPT adversary \(A\), the inversion success probability
 
-Let
-`f : {0,1}^* → {0,1}^*` be a deterministic polynomial-time computable function. It is a one-way function if, for every probabilistic polynomial-time algorithm A, the success probability
-```
-ε_A(n) = Pr[x ← {0,1}^n]
-         [ f(A(1^n, f(x))) = f(x) ]
-```
-is negligible in n.
+\[
+\varepsilon_A(n) = \Pr_{x \leftarrow \{0,1\}^n} [ f(A(1^n, f(x))) = f(x) ]
+\]
 
-The inverter receives the security parameter and the image f(x). It succeeds if it outputs any valid preimage of f(x), not necessarily the original x. Thus, one-wayness concerns inversion of the function value rather than recovery of a particular input representation.
+is negligible in \(n\). The probability is over the uniform choice of \(x\) and the internal randomness of \(A\). The adversary succeeds by finding any valid preimage of \(f(x)\), not necessarily the original input \(x\).
 
 ## 3. Time-Bounded Kolmogorov Complexity
 
-Fix a universal machine U and a time bound t. The deterministic time-bounded Kolmogorov complexity of a string x is
-```
-K^t(x) = min { |Π| : U(Π, 1^{t(|x|)}) = x }.
-```
-It is the length of the shortest program that outputs x within the prescribed time bound.
+The classical Kolmogorov complexity \(K(x)\) of a string \(x\) is the length of the shortest program that outputs \(x\) on a fixed universal Turing machine. The time-bounded version \(K^t(x)\) is the length of the shortest program that outputs \(x\) within time \(t(|x|)\).
 
-The randomized version considered here is
-```
-rK^t(x) = min { |Π| :
-  Pr_{r ← {0,1}^{t(|x|)}}[ U(Π^r, 1^{t(|x|)}) = x ] ≥ 2/3 }.
-```
-The program Π is fixed while its random tape varies. This model should not be conflated with pK, in which a common random string is available under a different quantifier structure.
+Formally (Liu–Pass, Section 3):
 
-The success threshold can be varied; the exposition uses the thresholds appearing in the Liu–Pass boundary formulations.
+\[
+K^t(x) = \min \{ |\Pi| : U(\Pi, 1^{t(|x|)}) = x \}
+\]
 
-## 4. Boundary Minimum-Complexity Problems
+The randomized time-bounded Kolmogorov complexity \(rK^t(x)\) is the length of the shortest randomized program \(\Pi\) such that, when its random tape is fixed to a random string \(r\), the resulting deterministic program outputs \(x\) with probability at least \(2/3\):
 
-The boundary promise is designed to focus on strings whose time-bounded description complexity lies close to the maximum possible range. It separates a YES case with a sufficiently short description under a smaller time bound and a sufficiently large complexity under a larger time bound from a NO case with a still larger lower bound.
+\[
+rK^t(x) = \min \{ |\Pi| : \Pr_{r \leftarrow \{0,1\}^{t(|x|)}} [ U(\Pi^r, 1^{t(|x|)}) = x ] \ge 2/3 \}
+\]
 
-For the parameter choice δ = 2/3, the deterministic boundary-MINK formulation uses:
+In \(rK\), a single program \(\Pi\) is fixed and the randomness \(r\) is varied over its random tape of length \(t(|x|)\). This is distinct from the probabilistic Kolmogorov complexity \(pK\), in which a random string is first chosen and the program may then depend on that string (a common-random-string model). Liu–Pass work with the more standard \(rK\) notion.
 
-- **YES:** `K^{t1}(x) ≤ n − 2` and `K^{t2}(x) > n − log n`.
-- **NO:** `K^{t2}(x) ≥ n − 1`.
+## 4. Boundary-MINK and Boundary-MINrK
 
-The randomized boundary-MINrK formulation uses:
+The ordinary promise problem MINK\(_{t_1,t_2}\) asks whether a string is “structured” (\(K^{t_1}(x) \le n-2\)) or “random” (\(K^{t_2}(x) \ge n-1\)). The boundary version restricts attention to the intermediate regime.
 
-- **YES:** `rK^{t1}_{2/3}(x) ≤ n − 4` and `rK^{t2}_{1/3}(x) > n − log n`.
-- **NO:** `rK^{t2}_{1/3}(x) ≥ n − 3`.
+Boundary-MINK\(_{t_1,t_2}\) (Liu–Pass, p. 97:4):
 
-The randomized thresholds and additive constants are part of the promise formulation. In particular, the expression
-`ceil(log2(1/(1−δ)))` equals 2 when δ = 2/3.
+- **YES:** \(K^{t_1}(x) \le n - 2\) and \(K^{t_2}(x) > n - \log n\)
+- **NO:** \(K^{t_2}(x) \ge n - 1\)
 
-## 5. Characterizing OWFs by Boundary Hardness
+For the randomized version with parameter \(\delta = 2/3\), we have \(\lceil \log_2(1/(1-\delta))\rceil = \lceil \log_2 3\rceil = 2\). The boundary-MINrK promise is:
 
-The central results distinguish randomized and deterministic time-bounded Kolmogorov complexity.
+- **YES:** \(rK^{t_1}_{2/3}(x) \le n - 4\) and \(rK^{t_2}_{1/3}(x) > n - \log n\)
+- **NO:** \(rK^{t_2}_{1/3}(x) \ge n - 3\)
 
-**Theorem 1.2 / Theorem 4.1 (randomized boundary characterization).** OWFs exist if and only if `boundary-MINrK^poly` is not in `ioBPP`. This characterization is unconditional.
+YES instances lie in the near-random boundary region; NO instances remain fully complex even under the larger time bound. The boundary restriction plays a central role in the reductions developed in the paper.
 
-**Theorem 1.1 / Theorem 4.2 (deterministic boundary characterization).** Assuming that, for some ε > 0,
-`E ⊄ ioSIZE[2^(εn)]`, OWFs exist if and only if `boundary-MINK^poly` is not in `ioBPP`.
+## 5. The Main Characterizations
 
-The randomized characterization is unconditional, whereas the deterministic characterization relies on the stated derandomization assumption. These qualifications are essential and should not be dropped when stating the results.
+**Theorem 1.2 / Theorem 4.1 (Liu–Pass).** One-way functions exist if and only if boundary-MINrK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\). This equivalence is unconditional.
 
-The proof strategy also relates weak one-way functions to strong one-way functions. Theorem 4.3 establishes weak OWFs from the relevant randomized boundary hardness. Yao-style hardness amplification (Theorem 2.3 in the cited work) upgrades weak OWFs to strong OWFs. The converse direction is established through the corresponding reduction (including Theorem 4.7). Together these ingredients yield the equivalence.
+**Theorem 1.1 / Theorem 4.2.** Assume there exists a constant \(\varepsilon > 0\) such that \(\mathrm{E} \not\subseteq \mathrm{ioSIZE}[2^{\varepsilon n}]\). Then one-way functions exist if and only if boundary-MINK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\).
 
-These theorems do not constitute an unconditional proof that OWFs exist. They give equivalent formulations of their existence in terms of computational hardness.
+**Theorem 4.3 (Liu–Pass).** If boundary-MINrK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\), then weak one-way functions exist. Yao’s hardness amplification (Theorem 2.3) converts any weak one-way function into a strong one-way function, establishing the “if” direction of Theorem 4.1. The converse direction (existence of one-way functions implies boundary-MINrK\(^{\mathrm{poly}} \notin \mathrm{ioBPP}\)) is proved as Theorem 4.7. Together, Theorems 4.3, 2.3, and 4.7 establish the equivalence stated in Theorem 4.1.
 
-## 6. Worst-Case-to-Average-Case Connections
+These results do not prove that one-way functions exist. They give precise characterizations of what hardness would suffice.
 
-Liu and Pass also establish connections between worst-case and average-case hardness for time-bounded Kolmogorov complexity.
+## 6. Separate Worst-Case-to-Average-Case Results
 
-**Theorem 1.3.** Under the same derandomization assumption used for the deterministic characterization, `MINK^poly` is not in BPP if and only if `MINK^poly` is not in AvgBPP. The result also implies `NP ⊄ AvgBPP`. The associated reduction addresses the non-gap MINK problem in the large-threshold regime.
+**Theorem 1.3.** Under the same derandomization assumption, MINK\(^{\mathrm{poly}} \notin \mathrm{BPP}\) if and only if MINK\(^{\mathrm{poly}} \notin \mathrm{AvgBPP}\). This result also implies that \(\mathrm{NP} \not\subseteq \mathrm{AvgBPP}\). It provides a worst-case-to-average-case reduction for the exact (non-gap) MINK problem in the large-threshold regime.
 
-**Theorem 1.4.** Unconditionally, `MINK^poly` is not in P if and only if `MINrK^poly` is not in AvgP.
+**Theorem 1.4.** Unconditionally, MINK\(^{\mathrm{poly}} \notin \mathrm{P}\) if and only if MINrK\(^{\mathrm{poly}} \notin \mathrm{AvgP}\).
 
-These worst-case-to-average-case statements are related results, but they are logically distinct from the main OWF characterizations. The assumptions and complexity classes in each theorem must be kept separate.
+These statements are independent of the main one-way-function characterizations and should not be conflated with them.
 
-## 7. Cryptographic Significance and an Open Question
+## 7. Cryptographic Consequences and Open Questions
 
-The characterization helps clarify what kind of worst-case hardness is sufficient to capture OWF existence. Since OWFs support important cryptographic constructions, the results connect a descriptive-complexity measure to the foundations of cryptography.
+The existence of one-way functions is equivalent to the existence of pseudorandom generators, pseudorandom functions, and digital signatures. One-way functions are also necessary for private-key encryption and many other central cryptographic tasks. Liu–Pass do not claim that their hardness assumptions imply public-key encryption.
 
-The implications should nevertheless be stated carefully. OWFs are necessary for private-key encryption and are sufficient for several major primitives, including pseudorandom generators, pseudorandom functions, and digital signatures. OWFs alone do not imply public-key encryption.
+The principal open question remaining is whether worst-case hardness of ordinary MINK\(^{\mathrm{poly}}\) (without the boundary promise) already implies the existence of one-way functions. This remains open.
 
-An important open direction is whether hardness of the ordinary MINK problem, without the boundary promise, can imply OWF existence. The boundary conditions are central to the known characterizations, and removing them is not established by the results summarized here.
+## 8. Educational Analogy (Not a Theorem)
 
-## 8. An Intuitive Perspective on Description Complexity
-
-Kolmogorov complexity measures the length of the shortest description that generates an object. Under a time bound, it also reflects the computational resources needed to produce the object from that description.
-
-As an educational analogy, one may think of this as a measure of descriptive, morphological, or syntactic complexity: a highly structured object may admit a short description, while an object with little compressible structure may require a longer one. This analogy is explanatory only; it is not a theorem and does not replace the formal definitions.
-
-The boundary formulations examine cases near the high-complexity end of the scale, where small changes in allowed computation time and description length become significant.
+One may think of Kolmogorov complexity as measuring the “descriptive complexity” of a string, analogous to the morphological and syntactic complexity of a linguistic utterance. A string that is easy to describe with a short program is like a highly regular grammatical sentence; a string that requires a long program is like an irregular, information-rich text. The boundary regime corresponds to sentences that are almost fully complex under a tight descriptive budget but become compressible if more time (or a longer grammar) is allowed. This analogy is purely pedagogical and is not a formal result.
 
 ## 9. Conclusion
 
-Liu and Pass provide precise links between one-way functions and worst-case hardness of boundary versions of time-bounded Kolmogorov complexity. The randomized boundary characterization is unconditional; the deterministic boundary characterization depends on a stated circuit lower-bound assumption. Their additional worst-case-to-average-case results deepen the connection between Kolmogorov complexity and computational complexity.
-
-The main conceptual contribution is a characterization, not a resolution of the open existence question for OWFs. The boundary promise, randomized-versus-deterministic distinction, and conditional nature of the deterministic theorem are indispensable to an accurate reading of the results.
+Liu and Pass (ITCS 2026) show that the existence of one-way functions is equivalent to the worst-case hardness of a natural boundary version of randomized time-bounded Kolmogorov complexity. Under a standard derandomization assumption the same holds for ordinary time-bounded Kolmogorov complexity. These are characterizations, not existence proofs. The work provides precise complexity-theoretic characterizations of the foundations of private-key cryptography.
 
 ## References
 
-1. Yanyi Liu and Rafael Pass, “One-Way Functions and Boundary Hardness of Randomized Time-Bounded Kolmogorov Complexity,” *ITCS 2026*, LIPIcs, vol. 362, article 97, pp. 97:1–97:19. DOI: [10.4230/LIPIcs.ITCS.2026.97](https://doi.org/10.4230/LIPIcs.ITCS.2026.97).
-2. Yanyi Liu and Rafael Pass, “Hardness Along the Boundary: Towards One-Way Functions from the Worst-Case Hardness of Time-Bounded Kolmogorov Complexity,” *CRYPTO 2025*, LNCS 16000, pp. 617–650. DOI: [10.1007/978-3-032-01855-7_20](https://doi.org/10.1007/978-3-032-01855-7_20).
-3. Yanyi Liu and Rafael Pass, “On One-way Functions and Kolmogorov Complexity,” *FOCS 2020*. DOI: [10.1109/FOCS46700.2020.00118](https://doi.org/10.1109/FOCS46700.2020.00118).
+Yanyi Liu and Rafael Pass. *One-Way Functions and Boundary Hardness of Randomized Time-Bounded Kolmogorov Complexity*. In 17th Innovations in Theoretical Computer Science Conference (ITCS 2026). Leibniz International Proceedings in Informatics (LIPIcs), Volume 362, pp. 97:1–97:19. Schloss Dagstuhl. DOI: 10.4230/LIPIcs.ITCS.2026.97
+
+Yanyi Liu and Rafael Pass. *Hardness Along the Boundary: Towards One-Way Functions from the Worst-Case Hardness of Time-Bounded Kolmogorov Complexity*. In Advances in Cryptology – CRYPTO 2025. LNCS 16000, pp. 617–650. DOI: 10.1007/978-3-032-01855-7_20.
+
+Yanyi Liu and Rafael Pass. *On One-way Functions and Kolmogorov Complexity*. In 2020 IEEE 61st Annual Symposium on Foundations of Computer Science (FOCS). DOI: 10.1109/FOCS46700.2020.00118.
 
 ---
 
-**Authorship and license note:** This exposition is original explanatory prose based on the cited research. The cited source paper is distributed under CC BY 4.0; that source license does not by itself determine the license of this exposition. The author may designate the exposition's own license separately.
+This exposition is original explanatory prose based on the cited research. The source paper is CC BY 4.0; the copyright and license of this exposition remain with the author.
