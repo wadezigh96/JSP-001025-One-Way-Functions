@@ -44,7 +44,13 @@ The randomized time-bounded Kolmogorov complexity \(rK^t(x)\) is the length of t
 rK^t(x) = \min \{ |\Pi| : \Pr_{r \leftarrow \{0,1\}^{t(|x|)}} [ U(\Pi^r, 1^{t(|x|)}) = x ] \ge 2/3 \}
 \]
 
-In \(rK\), a single program \(\Pi\) is fixed and the randomness \(r\) is varied over its random tape of length \(t(|x|)\). This is distinct from the probabilistic Kolmogorov complexity \(pK\), in which a random string is first chosen and the program may then depend on that string (a common-random-string model). Liu–Pass work with the more standard \(rK\) notion.
+More generally, for every threshold \(0<\delta<1\), define \(rK^t_\delta(x)\) by replacing the success threshold \(2/3\) in the preceding minimum with \(\delta\):
+
+\[
+rK^t_\delta(x) = \min \{ |\Pi| : \Pr_{r \leftarrow \{0,1\}^{t(|x|)}} [ U(\Pi^r, 1^{t(|x|)}) = x ] \ge \delta \}
+\]
+
+Thus \(rK^t(x)\) is shorthand for \(rK^t_{2/3}(x)\). In \(rK\), a single program \(\Pi\) is fixed and the randomness \(r\) is varied over its random tape of length \(t(|x|)\). This is distinct from the probabilistic Kolmogorov complexity \(pK\), in which a random string is first chosen and the program may then depend on that string (a common-random-string model). Liu–Pass work with the more standard \(rK\) notion.
 
 ## 4. Boundary-MINK and Boundary-MINrK
 
