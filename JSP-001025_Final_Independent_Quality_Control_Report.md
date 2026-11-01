@@ -2,38 +2,52 @@
 
 **Author:** Kames xyz  
 **Date:** 1 November 2026  
-**Status:** READY FOR AUTHOR REVIEW
+**Status:** TEXT SOURCE UPDATED — PDF/DOCX CONTENT REVIEW PENDING
 
 ## Scope
 
-The exposition Markdown in this repository has now been replaced with the full text supplied by the author in the conversation. This review checks the structure and claims represented in that text. The actual PDF and DOCX binary files and their download URLs were not attached or included in the message, so their layout, pagination, metadata, and byte-for-byte identity cannot be independently verified here.
+The repository contains the final-named PDF and DOCX files, and their GitHub file objects are retrievable:
 
-## Mathematical and editorial checklist
+- `JSP-001025_Exposition_OneWayFunctions_FINAL-1.pdf`
+- `JSP-001025_Exposition_OneWayFunctions_FINAL-1.docx`
 
-| Item | Review |
+This report distinguishes file availability from document-content verification. The binary files have not been rendered page-by-page in this review, so their visual layout, pagination, embedded fonts, metadata, and exact text match against the Markdown are not certified.
+
+## Changes made to the Markdown source
+
+1. Added the general threshold-indexed definition of randomized time-bounded Kolmogorov complexity, `rK^t_δ(x)`, for every (0<δ<1).
+2. Explicitly stated that the shorthand (rK^t(x)) means (rK^t_{2/3}(x)).
+3. This resolves the notation gap in Section 4, where both (rK^t_{2/3}) and (rK^t_{1/3}) occur in the boundary-MINrK promise.
+
+## Mathematical/editorial checklist
+
+| Item | Review status |
 |---|---|
-| OWF definition | Includes polynomial-time evaluation, PPT inversion, negligible success, and acceptance of any valid preimage. |
-| (K^t) definition | Included with universal-machine and time-bound notation. |
-| (rK^t) definition | Included with fixed program and varying random tape. |
-| (rK) versus (pK) | Distinction and common-random-string explanation included. |
-| Boundary-MINK promise | YES and NO thresholds included. |
-| Boundary-MINrK promise | YES and NO thresholds included for (delta=2/3). |
-| Theorem 1.2 / 4.1 | Stated as unconditional randomized-boundary characterization. |
-| Theorem 1.1 / 4.2 | Stated with the condition (mathrm{E}
-otsubseteqmathrm{ioSIZE}[2^{arepsilon n}]). |
-| Theorems 4.3, 2.3, 4.7 | Weak OWF, amplification, and converse direction summarized. |
-| Theorems 1.3 and 1.4 | Presented as separate worst-case-to-average-case results. |
-| Cryptographic implications | Text explicitly avoids claiming OWFs imply public-key encryption. |
-| Open question | Ordinary MINK hardness without boundary promise is identified as unresolved. |
-| Educational analogy | Explicitly labeled as not a theorem. |
-| References | Three Liu–Pass works and DOI identifiers are listed. |
+| OWF definition | Present in Markdown; includes polynomial-time evaluation, PPT inversion, negligible success, and any valid preimage. |
+| (K^t) definition | Present in Markdown. |
+| (rK^t) definition | Present; fixed program and varying random tape explained. |
+| General (rK^t_δ) notation | **Clarified in this update.** |
+| (rK) versus (pK) | Distinction included in Markdown. |
+| Boundary-MINK promise | YES/NO thresholds included. |
+| Boundary-MINrK promise | YES/NO thresholds included; threshold-indexed notation now defined. |
+| Theorems 1.1/4.2 | Conditional characterization stated with (E \not\subseteq ioSIZE[2^{εn}]) for some constant (ε>0). |
+| Theorems 1.2/4.1 | Unconditional randomized-boundary characterization stated. |
+| Theorems 4.3, 2.3, 4.7 | Weak-OWF construction, Yao amplification, and converse summarized. |
+| Theorems 1.3 and 1.4 | Presented separately as worst-case-to-average-case results. |
+| Cryptographic implications | No claim that OWFs alone imply public-key encryption. |
+| Open question | Ordinary MINK hardness without the boundary promise identified as unresolved. |
+| Educational analogy | Explicitly labeled as pedagogical, not a theorem. |
+| References | ITCS 2026, CRYPTO 2025, and FOCS 2020 entries included. |
 
-## Limitations and author checks
+## Source verification
 
-1. This is an exposition of cited results, not a proof that one-way functions exist.
-2. The deterministic boundary characterization is conditional; the randomized characterization is stated as unconditional.
-3. This report is an editorial consistency checklist, not independent peer review or committee certification.
-4. The PDF and DOCX binaries were not supplied as attachments or accessible download URLs in the conversation. Their typography, equations as rendered, pagination, metadata, and identical content have therefore not been checked.
-5. Before formal submission, compare both final binaries against the Markdown source and inspect every PDF page.
+The official ITCS 2026 paper by Yanyi Liu and Rafael Pass is published in LIPIcs, Volume 362, Article 97, DOI 10.4230/LIPIcs.ITCS.2026.97. Its published abstract and definitions support the distinction between randomized (rK^t) and the boundary-hardness characterizations described here.
 
-**Disposition:** The author-provided text is now published in the repository as Markdown. Binary PDF/DOCX verification remains outstanding.
+## Remaining checks before submission
+
+1. Render the current Markdown to PDF and DOCX, or inspect the uploaded binaries, and compare their extracted text against the updated Markdown.
+2. Inspect every PDF page for equation rendering, clipping, line breaks, and reference formatting.
+3. Confirm the author/date/license line in both binary files.
+4. Have the author approve the final artifacts before any MathDB submission.
+
+**Disposition:** The Markdown source has been corrected and committed. The PDF and DOCX are confirmed present in the repository, but their internal content and visual rendering are not yet certified. This report is an editorial quality-control record, not independent peer review, committee certification, or proof of prize eligibility.
