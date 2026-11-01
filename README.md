@@ -1,7 +1,7 @@
 # JSP-001025 — Exposition materials
 
 Problem: **Existence of One-Way Functions** (MathDB #405776)  
-Author: **Kames xyz**  
+Author: **Kames**  
 Date: **1 November 2026**
 
 ## Files
